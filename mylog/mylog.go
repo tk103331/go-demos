@@ -1,9 +1,11 @@
 package mylog
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"runtime"
 	"strconv"
 	"strings"
@@ -22,12 +24,18 @@ const (
 )
 
 const (
-	default_log_format = "#time #level #file:#line #msg"
+	default_log_format = "2006-01-02 15:04:05.000|camel|short"
 
 	default_time_format  = "2006-01-02 15:04:05.000"
 	default_level_format = "lower" //lower upper camel
-	default_file_format  = "short" //short long package
-	default_line_format  = "0000"
+	default_file_format  = "short" //short long
+
+	sep = ' '
+)
+
+var (
+	levelFmtOps = []string{"upper", "lower", "camel"}
+	fileFmtOps  = []string{"long", "short"}
 )
 
 var std *myLogger = New(os.Stdout, default_log_format, LevelInfo)
@@ -35,7 +43,6 @@ var std *myLogger = New(os.Stdout, default_log_format, LevelInfo)
 type myLogger struct {
 	mu      sync.Mutex
 	out     io.Writer
-	fmt     string
 	lvl     int
 	fmtInfo fmtInfo
 }
@@ -48,7 +55,9 @@ type fmtInfo struct {
 }
 
 func New(writer io.Writer, format string, level int) *myLogger {
-	return &myLogger{out: writer, fmt: format, lvl: level}
+	arr := strings.SplitN(format+"||||", "|", 4)
+	fi := genFmt(arr[0], arr[1], arr[2])
+	return &myLogger{out: writer, lvl: level, fmtInfo: fi}
 }
 
 func (l *myLogger) SetOutput(writer io.Writer) {
@@ -57,10 +66,10 @@ func (l *myLogger) SetOutput(writer io.Writer) {
 	l.out = writer
 }
 
-func (l *myLogger) SetFormat(format string) {
+func (l *myLogger) SetFormat(timeFmt string, levelFmt string, fileFmt string) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	l.fmt = format
+	l.fmtInfo = genFmt(timeFmt, levelFmt, fileFmt)
 }
 
 func (l *myLogger) SetLevel(level int) {
@@ -69,43 +78,81 @@ func (l *myLogger) SetLevel(level int) {
 	l.lvl = level
 }
 
+func genFmt(timeFmt string, levelFmt string, fileFmt string) fmtInfo {
+	level := default_level_format
+	if contains(levelFmtOps, levelFmt) {
+		level = levelFmt
+	}
+	file := default_file_format
+	if contains(fileFmtOps, fileFmt) {
+		file = fileFmt
+	}
+	return fmtInfo{
+		time:  timeFmt,
+		level: level,
+		file:  file,
+	}
+}
+
+func contains(arr []string, it string) bool {
+	for _, v := range arr {
+		if v == it {
+			return true
+		}
+	}
+	return false
+}
+
 func (l *myLogger) output(lvl int, msg string) {
 	if lvl >= l.lvl {
 		timeStr := l.timeStr()
-		lvlStr := levelStr(lvl)
+		lvlStr := l.levelStr(lvl)
 		fileStr, lineStr := l.posStr()
-		str := l.fmt
-		str = strings.Replace(str, "#time", timeStr, -1)
-		str = strings.Replace(str, "#level", lvlStr, -1)
-		str = strings.Replace(str, "#file", fileStr, -1)
-		str = strings.Replace(str, "#line", lineStr, -1)
-		str = strings.Replace(str, "#msg", msg, -1)
-		l.out.Write([]byte(str))
-		l.out.Write([]byte("\n"))
+
+		buf := bytes.NewBuffer([]byte{})
+		buf.WriteString(timeStr)
+		buf.WriteByte(sep)
+		buf.WriteString(lvlStr)
+		buf.WriteByte(sep)
+		buf.WriteString(fileStr)
+		buf.WriteByte(sep)
+		buf.WriteString(lineStr)
+		buf.WriteByte(sep)
+		buf.WriteString(msg)
+		buf.WriteByte('\n')
+		l.out.Write([]byte(buf.String()))
 	}
 }
 
 func (l *myLogger) timeStr() string {
-	return time.Now().Format(default_time_format)
+	return time.Now().Format(l.fmtInfo.time)
 }
 
-func levelStr(lvl int) string {
+func (l *myLogger) levelStr(lvl int) string {
+	lvlStr := ""
 	switch lvl {
 	case LevelTrace:
-		return "trace"
+		lvlStr = "trace"
 	case LevelDebug:
-		return "debug"
+		lvlStr = "debug"
 	case LevelInfo:
-		return "info"
+		lvlStr = "info"
 	case LevelWarn:
-		return "warn"
+		lvlStr = "warn"
 	case LevelError:
-		return "error"
+		lvlStr = "error"
 	case LevelFatal:
-		return "fatal"
-	default:
-		return ""
+		lvlStr = "fatal"
 	}
+	switch l.fmtInfo.level {
+	case "upper":
+		lvlStr = strings.ToUpper(lvlStr)
+	case "lower":
+		lvlStr = strings.ToLower(lvlStr)
+	case "camel":
+		lvlStr = strings.ToUpper(lvlStr[0:1]) + strings.ToLower(lvlStr[1:])
+	}
+	return lvlStr
 }
 
 func (l *myLogger) posStr() (string, string) {
@@ -113,7 +160,16 @@ func (l *myLogger) posStr() (string, string) {
 	if !ok {
 		file, line = "???", 0
 	}
-	return file, strconv.Itoa(line)
+	fileStr := file
+	switch l.fmtInfo.file {
+	case "long":
+		fileStr = file
+	case "short":
+		fileStr = path.Base(file)
+	}
+	lineStr := strconv.Itoa(line)
+
+	return fileStr, lineStr
 }
 func (l *myLogger) Trace(v ...interface{}) {
 	l.output(LevelTrace, fmt.Sprint(v...))

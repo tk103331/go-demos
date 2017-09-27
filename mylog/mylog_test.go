@@ -25,7 +25,7 @@ func TestSetOutput(t *testing.T) {
 }
 
 func TestSetFormat(t *testing.T) {
-	format := "#time 在 #file 文件 #line 行，输出：#msg"
+	format := "2006-01-02 15:04:05.000|upper|long"
 	l := New(os.Stdout, format, LevelInfo)
 	l.Infof(default_prefix, t.Name())
 	l.Info("test")
