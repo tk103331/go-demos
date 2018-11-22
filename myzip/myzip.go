@@ -9,6 +9,8 @@ import (
 	"path"
 )
 
+var method = zip.Store
+
 func main() {
 	if len(os.Args) < 4 {
 		printUsage()
@@ -19,8 +21,13 @@ func main() {
 	src := os.Args[2]
 	dst := os.Args[3]
 
-	if mode == "-c" {
-		fmt.Println("compress " + src + " to " + dst)
+	if mode == "-cs" {
+		method = zip.Store
+		fmt.Println("compress Store " + src + " to " + dst)
+		compress(src, dst)
+	} else if mode == "-cd" {
+		method = zip.Deflate
+		fmt.Println("compress Deflate " + src + " to " + dst)
 		compress(src, dst)
 	} else if mode == "-x" {
 		fmt.Println("extract " + src + " to " + dst)
@@ -33,7 +40,8 @@ func main() {
 
 func printUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("\tcompress : myzip -c src dst")
+	fmt.Println("\tcompress Store: myzip -cs src dst")
+	fmt.Println("\tcompress Deflate: myzip -cd src dst")
 	fmt.Println("\textract  : myzip -x src dst")
 }
 
@@ -68,7 +76,11 @@ func write(zw *zip.Writer, file *os.File, path string) {
 			write(zw, f, name+"/")
 		}
 	} else {
-		zf, err := zw.Create(name)
+		fih, err := zip.FileInfoHeader(stat)
+		check(err)
+		fih.Name = name
+		fih.Method = method
+		zf, err := zw.CreateHeader(fih)
 		check(err)
 		io.Copy(zf, file)
 	}
@@ -81,7 +93,8 @@ func extract(src string, dst string) {
 		if zf.FileInfo().IsDir() {
 			os.MkdirAll(zf.Name, os.ModeDir)
 		} else {
-			dir := dst + path.Dir(zf.Name)
+			name := dst + zf.Name
+			dir := path.Dir(name)
 			_, err := os.Stat(dir)
 			if err != os.ErrNotExist {
 				os.MkdirAll(dir, os.ModeDir)
@@ -89,10 +102,11 @@ func extract(src string, dst string) {
 			r, err := zf.Open()
 			check(err)
 			defer r.Close()
-			f, err := os.Create(dst + zf.Name)
+			f, err := os.Create(name)
 			check(err)
 			io.Copy(f, r)
 			f.Close()
+			os.Chtimes(name, zf.ModTime(), zf.ModTime())
 		}
 
 	}
