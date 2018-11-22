@@ -75,12 +75,7 @@ func write(zw *zip.Writer, file *os.File, path string) {
 }
 
 func extract(src string, dst string) {
-	srcFile, err := os.Open(src)
-	check(err)
-	defer srcFile.Close()
-	stat, err := srcFile.Stat()
-	check(err)
-	zr, err := zip.NewReader(srcFile, stat.Size())
+	zr, err := zip.OpenReader(src)
 	check(err)
 	for _, zf := range zr.File {
 		if zf.FileInfo().IsDir() {
