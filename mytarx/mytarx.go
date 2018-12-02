@@ -52,13 +52,17 @@ func main() {
 	} else if mode == "-x" {
 		fmt.Println("extract " + src + " to " + dst)
 		extract(src, dst)
-	} else if mode == "-xz" {
+	} else if mode == "-xg" {
 		fmt.Println("extract gzip " + src + " to " + dst)
 		m = gz
 		extract(src, dst)
-	} else if mode == "-xb" {
+	} else if mode == "-xl" {
 		fmt.Println("extract bzip2 " + src + " to " + dst)
-		m = bz
+		m = lz
+		extract(src, dst)
+	} else if mode == "-xz" {
+		fmt.Println("extract lzw " + src + " to " + dst)
+		m = zz
 		extract(src, dst)
 	} else {
 		printUsage()
@@ -86,16 +90,17 @@ func compress(src string, dst string) {
 	}
 	var tw *tar.Writer
 
-	if m == gz {
+	switch m {
+	case gz:
 		gw := gzip.NewWriter(dstFile)
 		tw = tar.NewWriter(gw)
-	} else if m == lz {
+	case lz:
 		lw := lzw.NewWriter(dstFile, lzw.MSB, 8)
 		tw = tar.NewWriter(lw)
-	} else if m == zz {
+	case zz:
 		zw := zlib.NewWriter(dstFile)
 		tw = tar.NewWriter(zw)
-	} else {
+	default:
 		tw = tar.NewWriter(dstFile)
 	}
 
@@ -131,7 +136,21 @@ func write(tw *tar.Writer, file *os.File, path string) {
 func extract(src string, dst string) {
 	f, err := os.Open(src)
 	check(err)
-	zr := tar.NewReader(f)
+	var r io.Reader
+	switch m {
+	case gz:
+		r, err = gzip.NewReader(f)
+		check(err)
+	case lz:
+		r = lzw.NewReader(f, lzw.MSB, 8)
+	case zz:
+		r, err = zlib.NewReader(f)
+		check(err)
+	default:
+		r = f
+	}
+
+	zr := tar.NewReader(r)
 
 	for err == nil {
 		zh, err := zr.Next()
