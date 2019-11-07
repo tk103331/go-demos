@@ -1,0 +1,53 @@
+package routes
+
+import (
+	"github.com/kataras/iris/v12"
+)
+
+func registerPathParamRoute(app *iris.Application) {
+
+	// Method:    GET
+	// Resource:  http://localhost:8080/user/42
+	//
+	// Need to use a custom regexp instead?
+	// Easy;
+	// Just mark the parameter's type to 'string'
+	// which accepts anything and make use of
+	// its `regexp` macro function, i.e:
+	// app.Get("/user/{id:string regexp(^[0-9]+$)}")
+	app.Get("/user/{id:uint64}", func(ctx iris.Context) {
+		userID, _ := ctx.Params().GetUint64("id")
+		ctx.Writef("User ID: %d", userID)
+	})
+
+	patterns := []string{
+		"/",                           // Matches only GET "/".
+		"/assets/{asset:path}",        // Matches all GET requests prefixed with "/assets/**/*"
+		"/profile/{username:string}",  // Matches all GET requests prefixed with "/profile/" and followed by a single path part.
+		"/profile/me",                 // Matches only GET "/profile/me" and it does not conflict with /profile/{username:string} or any root wildcard /{root:path}.
+		"/users/{userid:int min(1)}",  // Matches all GET requests prefixed with /users/ and followed by a number which should be equal or higher than 1.
+		"{root:path}",                 // Matches all GET requests except the ones that are already handled by other routes.
+		"/u/{username:string}",        // Matches all GET requests of: /u/abcd123 maps to :string
+		"/u/{id:int}",                 // Matches all GET requests of: /u/-1 maps to :int (if :int registered otherwise :string)
+		"/u/{uid:uint}",               // Matches all GET requests of: /u/42 maps to :uint (if :uint registered otherwise :int)
+		"/u/{firstname:alphabetical}", // Matches all GET requests of: /u/abcd maps to :alphabetical (if :alphabetical registered otherwise :string)
+		"/{alias:string regexp(^[a-z0-9]{1,10}\\.xml$)}", // Matches all GET requests of /abctenchars.xml respectfully.
+		"/{alias:string regexp(^[a-z0-9]{1,10}$)}",       // Matches all GET requests of /abcdtenchars respectfully.
+	}
+	for _, p := range patterns {
+		app.Get(p, createHandler(p))
+	}
+}
+
+func createHandler(pattern string) func(ctx iris.Context) {
+	return func(ctx iris.Context) {
+		ctx.Writef("Request from method: %s and path: %s\n", ctx.Method(), ctx.Path())
+		ctx.Writef("Request matches pattern: %s\n", pattern)
+		ctx.Writef("Request params:")
+		params := make(map[string]string)
+		ctx.Params().Visit(func(key, value string) {
+			params[key] = value
+		})
+		ctx.JSON(params)
+	}
+}
