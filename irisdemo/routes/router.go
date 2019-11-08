@@ -11,5 +11,6 @@ func RegisterRoutes(app *iris.Application) {
 	registerOfflineRoute(app)
 	registerGroupRoute(app)
 	registerPathParamRoute(app)
+	registerCustomMacroRoute(app)
 
 }

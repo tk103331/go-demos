@@ -2,7 +2,6 @@ package routes
 
 import (
 	"github.com/kataras/iris/v12"
-	"regexp"
 )
 
 func registerPathParamRoute(app *iris.Application) {
@@ -44,30 +43,6 @@ func registerPathParamRoute(app *iris.Application) {
 		app.Get(p, createHandler(p))
 	}
 
-	latLonExpr := "^-?[0-9]{1,3}(?:\\.[0-9]{1,10})?$"
-	latLonRegex, _ := regexp.Compile(latLonExpr)
-
-	// Register your custom argument-less macro function to the :string param type.
-	// MatchString is a type of func(string) bool, so we use it as it is.
-	app.Macros().Get("string").RegisterFunc("coordinate", latLonRegex.MatchString)
-
-	app.Get("/coordinates/{lat:string coordinate()}/{lon:string coordinate()}",
-		func(ctx iris.Context) {
-			ctx.Writef("Lat: %s | Lon: %s", ctx.Params().Get("lat"), ctx.Params().Get("lon"))
-		})
-
-	app.Macros().Get("string").RegisterFunc("range",
-		func(minLength, maxLength int) func(string) bool {
-			return func(paramValue string) bool {
-				return len(paramValue) >= minLength && len(paramValue) <= maxLength
-			}
-		})
-
-	app.Get("/limitchar/{name:string range(1,200) else 400}", func(ctx iris.Context) {
-		name := ctx.Params().Get("name")
-		ctx.Writef(`Hello %s | the name should be between 1 and 200 characters length
-    otherwise this handler will not be executed`, name)
-	})
 }
 
 func createHandler(pattern string) func(ctx iris.Context) {
