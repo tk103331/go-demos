@@ -26,15 +26,15 @@ func registerPathParamRoute(app *iris.Application) {
 		"/files/{name:file}",         // Matches all GET requests prefixed with "/files/*", lowercase or uppercase letters, numbers, underscore (_), dash (-), point (.) and no spaces or other special characters that are not valid for filenames
 		"/profile/{username:string}", // Matches all GET requests prefixed with "/profile/" and followed by a single path part.
 		"/profile/me",                // Matches only GET "/profile/me" and it does not conflict with /profile/{username:string} or any root wildcard /{root:path}.
-		"/profile/{username:string prefix(test)}",        // Matches all GET requests prefixed with /profile/ and followed by a string which prefixed with test.
-		"/profile/{username:string suffix(test)}",        // Matches all GET requests prefixed with /profile/ and followed by a string which suffixed with test.
-		"/users/{userid:int min(1)}",                     // Matches all GET requests prefixed with /users/ and followed by a number which should be equal or higher than 1.
-		"/users/{userid:int max(9999)}",                  // Matches all GET requests prefixed with /users/ and followed by a number which should be lowwer than 9999.
-		"{root:path}",                                    // Matches all GET requests except the ones that are already handled by other routes.
-		"/u/{username:string}",                           // Matches all GET requests of: /u/abcd123 maps to :string
-		"/u/{id:int}",                                    // Matches all GET requests of: /u/-1 maps to :int (if :int registered otherwise :string)
-		"/u/{uid:uint}",                                  // Matches all GET requests of: /u/42 maps to :uint (if :uint registered otherwise :int)
-		"/u/{firstname:alphabetical}",                    // Matches all GET requests of: /u/abcd maps to :alphabetical (if :alphabetical registered otherwise :string)
+		"/profile/{username:string prefix(test)}", // Matches all GET requests prefixed with /profile/ and followed by a string which prefixed with test.
+		"/profile/{username:string suffix(test)}", // Matches all GET requests prefixed with /profile/ and followed by a string which suffixed with test.
+		"/users/{userid:int min(1)}",              // Matches all GET requests prefixed with /users/ and followed by a number which should be equal or higher than 1.
+		"/users/{userid:int max(9999)}",           // Matches all GET requests prefixed with /users/ and followed by a number which should be lowwer than 9999.
+		//"{root:path}",                                    // Matches all GET requests except the ones that are already handled by other routes.
+		"/u/{username:string}",        // Matches all GET requests of: /u/abcd123 maps to :string
+		"/u/{id:int}",                 // Matches all GET requests of: /u/-1 maps to :int (if :int registered otherwise :string)
+		"/u/{uid:uint}",               // Matches all GET requests of: /u/42 maps to :uint (if :uint registered otherwise :int)
+		"/u/{firstname:alphabetical}", // Matches all GET requests of: /u/abcd maps to :alphabetical (if :alphabetical registered otherwise :string)
 		"/{alias:string regexp(^[a-z0-9]{1,10}\\.xml$)}", // Matches all GET requests of /abctenchars.xml respectfully.
 		"/{alias:string regexp(^[a-z0-9]{1,10}$)}",       // Matches all GET requests of /abcdtenchars respectfully.
 
