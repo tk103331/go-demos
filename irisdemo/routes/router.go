@@ -15,4 +15,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerReverseLookupRoute(app)
 	registerMiddlewareRoute(app)
 	registerHttpErrorRoute(app)
+	registerSubdomainRoute(app)
 }
