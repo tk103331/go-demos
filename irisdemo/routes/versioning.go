@@ -40,6 +40,8 @@ func registerVersioningRoute(app *iris.Application) {
 		versioning.NotFound: myCustomNotVersionFound,
 	}))
 
+	postAPIV09 := versioning.NewGroup("0.9").Deprecated(versioning.DefaultDeprecationOptions)
+	postAPIV09.Get("/", sendHandler("v0.9"))
 	postAPIV10 := versioning.NewGroup("1.0")
 	postAPIV10.Get("/", sendHandler("v1.0"))
 
@@ -48,5 +50,19 @@ func registerVersioningRoute(app *iris.Application) {
 	postAPIV2.Post("/", sendHandler("v2.x"))
 	postAPIV2.Put("/other", sendHandler("v2.x"))
 
-	versioning.RegisterGroups(app.Party("/api/post"), versioning.NotFoundHandler, postAPIV10, postAPIV2)
+	versioning.RegisterGroups(app.Party("/api/post"), versioning.NotFoundHandler, postAPIV09, postAPIV10, postAPIV2)
+
+	// Compare version manually from inside your handlers
+	// reports if the "version" is matching to the "is".
+	// the "is" can be a constraint like ">= 1, < 3".
+	// If(version string, is string) bool
+	// same as `If` but expects a Context to read the requested version.
+	// Match(ctx iris.Context, expectedVersion string) bool
+	app.Get("/api/manual", func(ctx iris.Context) {
+		if versioning.Match(ctx, ">= 2.2.3") {
+			// [logic for >= 2.2.3 version of your handler goes here]
+			ctx.WriteString(">= 2.2.3 version")
+			return
+		}
+	})
 }
