@@ -7,6 +7,7 @@ import (
 
 func main() {
 	app := iris.New()
+
 	// Load all templates from the "./views" folder
 	// where extension is ".html" and parse them
 	// using the standard `html/template` package.

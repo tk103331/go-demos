@@ -16,4 +16,6 @@ func RegisterRoutes(app *iris.Application) {
 	registerMiddlewareRoute(app)
 	registerHttpErrorRoute(app)
 	registerSubdomainRoute(app)
+	registerWrapRouterRoute(app)
+	registerOverrideContextRoute(app)
 }
