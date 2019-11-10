@@ -20,4 +20,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerOverrideContextRoute(app)
 	registerVersioningRoute(app)
 	registerContentNegotiationRoute(app)
+	registerResponseRecorderRoute(app)
 }
