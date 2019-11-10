@@ -24,4 +24,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerReferrerRoute(app)
 	registerJWTAuthenticationRoute(app)
 	registerQueryParameterRoute(app)
+	registerFormDataRoute(app)
 }
