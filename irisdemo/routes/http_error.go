@@ -4,7 +4,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-func registerHttpErrorRoute(app *iris.Application) {
+func registerHTTPErrorRoute(app *iris.Application) {
 	app.OnErrorCode(iris.StatusNotFound, notFound)
 	app.OnErrorCode(iris.StatusInternalServerError, internalServerError)
 	// to register a handler for all "error"
