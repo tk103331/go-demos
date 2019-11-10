@@ -19,4 +19,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerWrapRouterRoute(app)
 	registerOverrideContextRoute(app)
 	registerVersioningRoute(app)
+	registerContentNegotiationRoute(app)
 }
