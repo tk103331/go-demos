@@ -21,4 +21,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerVersioningRoute(app)
 	registerContentNegotiationRoute(app)
 	registerResponseRecorderRoute(app)
+	registerReferrerRoute(app)
 }

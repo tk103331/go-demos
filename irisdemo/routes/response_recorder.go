@@ -13,22 +13,26 @@ func registerResponseRecorderRoute(app *iris.Application) {
 
 	// collect and "log".
 	app.Done(func(ctx iris.Context) {
-		recorder := ctx.Recorder()
-		// Body returns the body tracked from the writer so far. Do not use this for edit.
-		body := string(recorder.Body())
-		recorder.ResetBody()
-		recorder.WriteString("result:")
-		recorder.WriteString(body)
+		path := ctx.Path()
+		if path == "/save" {
+			recorder := ctx.Recorder()
+			// Body returns the body tracked from the writer so far. Do not use this for edit.
+			body := string(recorder.Body())
+			recorder.ResetBody()
+			recorder.WriteString("result:")
+			recorder.WriteString(body)
 
-		// another way
-		// Use Write/Writef/WriteString to stream write and SetBody/SetBodyString to set body instead.
-		// body := recorder.Body()
-		// recorder.SetBodyString("result:")
-		// recorder.Write(body)
+			// another way
+			// Use Write/Writef/WriteString to stream write and SetBody/SetBodyString to set body instead.
+			// body := recorder.Body()
+			// recorder.SetBodyString("result:")
+			// recorder.Write(body)
 
-		recorder.Header().Add("reset-body", "true")
-		// Should print success.
-		app.Logger().Infof("sent: %s", string(body))
+			recorder.Header().Add("reset-body", "true")
+			// Should print success.
+			app.Logger().Infof("sent: %s", string(body))
+		}
+
 	})
 
 	app.Get("/save", func(ctx iris.Context) {
