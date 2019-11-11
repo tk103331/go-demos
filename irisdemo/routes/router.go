@@ -26,4 +26,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerQueryParameterRoute(app)
 	registerFormDataRoute(app)
 	registerValidationRoute(app)
+	registerCacheRoute(app)
 }
