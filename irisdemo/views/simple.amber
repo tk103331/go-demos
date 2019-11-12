@@ -1,0 +1,12 @@
+doctype html
+html[lang="en"]
+    head 
+      title #{title}
+    body
+        h1 #{title}
+        h3 Name: #{user.Name}
+        h3 Age: #{user.Age}
+        h3 Birth: #{user.Birth}
+        div powered by 
+         strong #{engine} 
+         | view engine
