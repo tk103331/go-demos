@@ -32,7 +32,7 @@ func registerCacheRoute(app *iris.Application) {
 	// saves its content on the first request and serves it instead of re-calculating the content.
 	// After 10 seconds it will be cleared and reset.
 
-	//app.Use(iris.Cache304(refreshEvery))
+	// app.Use(iris.Cache304(refreshEvery))
 	// same as:
 	// app.Use(func(ctx iris.Context) {
 	// 	now := time.Now()
@@ -44,17 +44,19 @@ func registerCacheRoute(app *iris.Application) {
 	// 	ctx.Next()
 	// })
 
-	cache304 := func(ctx iris.Context) {
-		now := time.Now()
-		if modified, err := ctx.CheckIfModifiedSince(now.Add(-refreshEvery)); !modified && err == nil {
-			ctx.WriteNotModified()
-			return
-		}
-		ctx.SetLastModified(now.Add(8 * time.Hour))
-		ctx.Next()
-	}
+	cache304 := iris.Cache304(refreshEvery)
+	// same as:
+	// cache304 := func(ctx iris.Context) {
+	// 	now := time.Now()
+	// 	if modified, err := ctx.CheckIfModifiedSince(now.Add(-refreshEvery)); !modified && err == nil {
+	// 		ctx.WriteNotModified()
+	// 		return
+	// 	}
+	// 	ctx.SetLastModified(now.Add(8 * time.Hour))
+	// 	ctx.Next()
+	// }
 
-	app.Get("/greet", cache304, greet)
+	app.Get("/cache304", cache304, greet)
 }
 
 func writeMarkdown(ctx iris.Context) {
@@ -66,6 +68,7 @@ func writeMarkdown(ctx iris.Context) {
 }
 
 func greet(ctx iris.Context) {
+	println("Handler executed. Content refreshed.")
 	ctx.Header("X-Custom", "my  custom header")
 	ctx.Writef("Hello World! %s", time.Now())
 }
