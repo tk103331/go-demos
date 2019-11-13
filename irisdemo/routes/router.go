@@ -28,4 +28,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerValidationRoute(app)
 	registerCacheRoute(app)
 	registerFileServerRoute(app)
+	registerViewEngineRoute(app)
 }
