@@ -9,6 +9,7 @@ require (
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/gorilla/securecookie v1.1.1
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/iris-contrib/middleware/jwt v0.0.0-20191028172159-41f72a73786a
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
