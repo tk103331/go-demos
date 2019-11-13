@@ -16,7 +16,7 @@ func registerSessionRoute(app *iris.Application) {
 	app.Get("/logout", logout)
 }
 
-func 	(ctx iris.Context) {
+func secret(ctx iris.Context) {
 	// Check if user is authenticated
 	if auth, _ := sess.Start(ctx).GetBoolean("authenticated"); !auth {
 		ctx.StatusCode(iris.StatusForbidden)
