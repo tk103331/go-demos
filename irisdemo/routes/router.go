@@ -31,4 +31,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerViewEngineRoute(app)
 	registerCookieRoute(app)
 	registerSessionRoute(app)
+	registerSessionDBRoute(app)
 }
