@@ -5,8 +5,7 @@ import (
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/sessions"
-	"github.com/kataras/iris/v12/sessions/sessiondb/badger"
-	//for redis
+	"github.com/kataras/iris/v12/sessions/sessiondb/redis"
 )
 
 func registerSessionDBRoute(app *iris.Application) {
@@ -15,26 +14,26 @@ func registerSessionDBRoute(app *iris.Application) {
 	// you can replace them based on your running redis' server settings:
 
 	// for redis
-	// db := redis.New(redis.Config{
-	// 	Network:   "tcp",
-	// 	Addr:      "127.0.0.1:6379",
-	// 	Timeout:   time.Duration(30) * time.Second,
-	// 	MaxActive: 10,
-	// 	Password:  "",
-	// 	Database:  "",
-	// 	Prefix:    "",
-	// 	Delim:     "-",
-	// 	Driver:    redis.Redigo(), // redis.Radix() can be used instead.
-	// })
+	db := redis.New(redis.Config{
+		Network:   "tcp",
+		Addr:      "127.0.0.1:6379",
+		Timeout:   time.Duration(30) * time.Second,
+		MaxActive: 10,
+		Password:  "",
+		Database:  "",
+		Prefix:    "",
+		Delim:     "-",
+		Driver:    redis.Redigo(), // redis.Radix() can be used instead.
+	})
 
 	// for boltdb
 	// db, err := boltdb.New("./sessions.db", os.FileMode(0750))
 
 	// badger
-	db, err := badger.New("./data")
-	if err != nil {
-		panic(err)
-	}
+	// db, err := badger.New("./data")
+	// if err != nil {
+	// 	panic(err)
+	// }
 	// Optionally configure the underline driver:
 	// driver := redis.Redigo()
 	// driver.MaxIdle = ...

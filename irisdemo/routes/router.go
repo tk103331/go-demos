@@ -32,4 +32,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerCookieRoute(app)
 	registerSessionRoute(app)
 	registerSessionDBRoute(app)
+	registerWebsocketRoute(app)
 }
