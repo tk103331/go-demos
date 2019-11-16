@@ -32,6 +32,7 @@ var serverEvents = websocket.Namespaces{
 			// Write message back to the client message owner with:
 			// nsConn.Emit("chat", msg)
 			// Write message to all except this client with:
+			msg.Body = []byte(nsConn.String() + ":" + string(msg.Body))
 			nsConn.Conn.Server().Broadcast(nsConn, msg)
 			return nil
 		},
