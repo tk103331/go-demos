@@ -34,4 +34,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerSessionDBRoute(app)
 	registerWebsocketRoute(app)
 	registerDependencyInjectionRoute(app)
+	registerMvc1Route(app)
 }
