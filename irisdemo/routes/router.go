@@ -35,4 +35,5 @@ func RegisterRoutes(app *iris.Application) {
 	registerWebsocketRoute(app)
 	registerDependencyInjectionRoute(app)
 	registerMvc1Route(app)
+	registerMvc2Route(app)
 }

@@ -6,7 +6,7 @@ import (
 )
 
 func registerMvc1Route(app *iris.Application) {
-	mvc.Configure(app.Party("/root"), myMVC)
+	mvc.Configure(app.Party("/mvc1"), myMVC)
 }
 func myMVC(app *mvc.Application) {
 	// app.Register(...)
@@ -25,15 +25,15 @@ func (m *MyController) BeforeActivation(b mvc.BeforeActivation) {
 	// 2-> Path
 	// 3-> The controller's function name to be parsed as handler
 	// 4-> Any handlers that should run before the MyCustomHandler
-	b.Handle("GET", "/something/{id:long}", "MyCustomHandler", anyMiddleware...)
+	b.Handle("GET", "/something/{id:long}", "MyCustomHandler")
 }
 
-// GET: http://localhost:8080/root
+// GET: /root
 func (m *MyController) Get() string {
 	return "Hey"
 }
 
-// GET: http://localhost:8080/root/something/{id:long}
+// GET: /root/something/{id:long}
 func (m *MyController) MyCustomHandler(id int64) string {
 	return "MyCustomHandler says Hey"
 }
