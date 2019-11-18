@@ -29,4 +29,11 @@ func RegisterRoutes(app *iris.Application) {
 	registerCacheRoute(app)
 	registerFileServerRoute(app)
 	registerViewEngineRoute(app)
+	registerCookieRoute(app)
+	registerSessionRoute(app)
+	registerSessionDBRoute(app)
+	registerWebsocketRoute(app)
+	registerDependencyInjectionRoute(app)
+	registerMvc1Route(app)
+	registerMvc2Route(app)
 }
