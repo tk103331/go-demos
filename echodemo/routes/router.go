@@ -7,4 +7,5 @@ import (
 // RegisterRoutes register all routes
 func RegisterRoutes(e *echo.Echo) {
 	registerOverviewRoute(e)
+	registerContextRoute(e)
 }
