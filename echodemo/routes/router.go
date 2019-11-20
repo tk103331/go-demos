@@ -8,4 +8,5 @@ import (
 func RegisterRoutes(e *echo.Echo) {
 	registerOverviewRoute(e)
 	registerContextRoute(e)
+	registerCookieRoute(e)
 }
