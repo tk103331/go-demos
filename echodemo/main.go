@@ -25,7 +25,7 @@ func main() {
 		l.SetOutput(os.Stdout)
 		// Echo#Logger.SetLevel(log.Lvl) can be used to set the log level for the logger.
 		// Default value is ERROR
-		l.SetLevel(log.ERROR)
+		l.SetLevel(log.DEBUG)
 	}
 
 	// Echo#HideBanner can be used to hide the startup banner.

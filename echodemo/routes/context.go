@@ -20,6 +20,7 @@ func registerContextRoute(e *echo.Echo) {
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			cc := &CustomContext{c}
+			c.Logger().Info("Create a middleware to extend default context")
 			return next(cc)
 		}
 	})
