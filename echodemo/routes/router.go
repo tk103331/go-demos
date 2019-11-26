@@ -11,4 +11,5 @@ func RegisterRoutes(e *echo.Echo) {
 	registerCookieRoute(e)
 	registerErrorHandingRoute(e)
 	registerRequestRoute(e)
+	registerResponseRoute(e)
 }
